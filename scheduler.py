@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-from algorithms import*
+from algorithms import *
 import matplotlib.pyplot as plt
 
 master = Tk(className='Scheduler')
@@ -16,13 +16,6 @@ contextSwitch = 0
 quantum = 0
 N = 0
 processList = []
-#==========================================================================================
-class process(object):
-    def __init__(self, number, startTime, burstTime, priority):
-        self.number = number
-        self.startTime = startTime
-        self.burstTime = burstTime
-        self.priority = priority
 #==================================== Get Data From GUI ===================================
 def data1():
     global fileName,scheduling,contextSwitch,quantum

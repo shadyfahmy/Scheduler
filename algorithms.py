@@ -1,6 +1,11 @@
-from scheduler import *
-from scheduler import processList
 import matplotlib.pyplot as plt
+
+class process(object):
+    def __init__(self, number, startTime, burstTime, priority):
+        self.number = number
+        self.startTime = startTime
+        self.burstTime = burstTime
+        self.priority = priority
 
 def HPF(processList):
     print("HPF")
@@ -11,6 +16,7 @@ def HPF(processList):
     for i in range(len(processList)):
         x.append(0)
 '''
+
 def FCFS():
     print("FCFS")
     '''processList = processList.sort(key=lambda x: x.startTime, reverse=False)
