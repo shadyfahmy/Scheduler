@@ -45,10 +45,10 @@ def readData():
         HPF(processList)
     elif scheduling == "FCFS":
         FCFS()
-    elif scheduling == "STRN":
-        SRTN(processList)
+    elif scheduling == "SRTN":
+        SRTN(processList,float(contextSwitch))
     elif scheduling == "RR":
-        RR(processList)
+        RR(processList,float(quantum), float(contextSwitch))
 
 
 
