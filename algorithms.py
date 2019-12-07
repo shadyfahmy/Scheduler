@@ -59,11 +59,13 @@ def SRTN(processList,switchingTime):
     count = len(processList)
     Ticks = []
     Ticks.append("idle")
+    Ticks.append("switching")
     for i,process in enumerate(processList):
         Ticks.append(str(i+1))
-    plt.yticks(np.arange(count+1),Ticks)
+    plt.yticks(np.arange(count+2),Ticks)
     currentProcess = -1
     currentTime = 0
+    switch = False
     while len(processList)>0 or len(workingQueue)>0 or currentProcess!= -1:
         while(len(processList)>0):
             if (currentTime >= processList[0].startTime):
@@ -77,36 +79,36 @@ def SRTN(processList,switchingTime):
                         currentProcess = workingQueue.pop(0)
                         workingQueue.sort(key=lambda x: x.remainingTime)
                         if switchingTime > 0:
-                            y.append(0)
-                            x.append(currentTime)
-                            currentTime+=switchingTime
-                            y.append(0)
-                            x.append(currentTime)
+                            switch = True
                         
                 processList.remove(processList[0])
             else:
                 break
+        if(switch):
+            if switchingTime > 0:
+                y.append(1)
+                x.append(currentTime)
+                currentTime+=switchingTime
+                y.append(1)
+                x.append(currentTime)
+            switch = False
         if(currentProcess != -1):
-            y.append(currentProcess.number)
+            y.append(currentProcess.number+1)
             x.append(currentTime)
             if(incVal < currentProcess.remainingTime):
                 currentProcess.remainingTime-= incVal
                 currentTime+= incVal
-                y.append(currentProcess.number)
+                y.append(currentProcess.number+1)
                 x.append(currentTime)
             else:
                 remTime = currentProcess.remainingTime
                 currentTime+= remTime
                 currentProcess.remainingTime-= remTime
-                y.append(currentProcess.number)
+                y.append(currentProcess.number+1)
                 x.append(currentTime)
                 currentProcess = -1
-                if switchingTime > 0:
-                    y.append(0)
-                    x.append(currentTime)
-                    currentTime+=switchingTime
-                    y.append(0)
-                    x.append(currentTime)
+                # if switchingTime > 0:
+                #     switch = True
 
         elif(len(workingQueue)>0):
             currentProcess = workingQueue.pop(0)
@@ -130,22 +132,20 @@ def RR(processList,quantumTime,switchingTime):
     count = len(processList)
     Ticks = []
     Ticks.append("idle")
+    Ticks.append("switching")
     for i,process in enumerate(processList):
         Ticks.append(str(i+1))
-    plt.yticks(np.arange(count+1),Ticks)
+    plt.yticks(np.arange(count+2),Ticks)
     currentProcess = -1
     lastProcess = -1
     currentTime = 0
+    switch = False
     while len(processList)>0 or len(workingQueue)>0 or currentProcess !=-1 or lastProcess !=-1:
         while(len(processList)>0):
             if (currentTime >= processList[0].startTime):
                 if(currentProcess == -1):
                     if(lastProcess != -1):
-                        y.append(0)
-                        x.append(currentTime)
-                        currentTime+=switchingTime
-                        y.append(0)
-                        x.append(currentTime)
+                       switch = True
                     currentProcess = processList[0]
                 else:
                     workingQueue.append(processList[0])
@@ -158,39 +158,38 @@ def RR(processList,quantumTime,switchingTime):
             else:
                 workingQueue.append(lastProcess)
             lastProcess = -1
+        if(switch):
+            if switchingTime > 0:
+                y.append(1)
+                x.append(currentTime)
+                currentTime+=switchingTime
+                y.append(1)
+                x.append(currentTime)
+            switch = False
         if(currentProcess != -1):
-            y.append(currentProcess.number)
+            y.append(currentProcess.number+1)
             x.append(currentTime)
             if(quantumTime < currentProcess.remainingTime):
                 currentProcess.remainingTime-= quantumTime
                 currentTime+= quantumTime
-                y.append(currentProcess.number)
+                y.append(currentProcess.number+1)
                 x.append(currentTime)
                 lastProcess = currentProcess
                 currentProcess = -1
                 if(len(workingQueue) != 0):
                     currentProcess = workingQueue.pop(0)
-                    if switchingTime > 0:
-                        y.append(0)
-                        x.append(currentTime)
-                        currentTime+=switchingTime
-                        y.append(0)
-                        x.append(currentTime)
+                    switch = True
             else:
                 remTime = currentProcess.remainingTime
                 currentTime+= remTime
                 currentProcess.remainingTime-= remTime
-                y.append(currentProcess.number)
+                y.append(currentProcess.number+1)
                 x.append(currentTime)
                 currentProcess = -1
                 if(len(workingQueue) != 0):
                     currentProcess = workingQueue.pop(0)
-                if switchingTime > 0:
-                    y.append(0)
-                    x.append(currentTime)
-                    currentTime+=switchingTime
-                    y.append(0)
-                    x.append(currentTime)
+                # if switchingTime > 0:
+                #     switch = True
         else:
             currentTime+=0.01
             y.append(0)
