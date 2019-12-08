@@ -1,3 +1,5 @@
+import operator
+
 import matplotlib.pyplot as plt
 import numpy as np
 import math
@@ -12,41 +14,97 @@ class process(object):
 
 def HPF(processList):
     print("HPF")
-    '''processList = processList.sort(key=lambda x: x.priority, reverse=True)
+    Ticks = []
+    Ticks.append("idle")
+    for i,process in enumerate(processList):
+        Ticks.append(str(i+1))
+    plt.yticks(np.arange(len(processList)+1),Ticks)
+    processList.sort(key=lambda x: x.startTime, reverse=False)
+    currentTime = 0
+    count = len(processList)
     x = []
     y = []
+    readyQueue = []
+    x.append(0)
+    y.append(0)
 
-    for i in range(len(processList)):
-        x.append(0)
-'''
+    while (len(processList) > 0) or (len(readyQueue) > 0):
+        for j in range(len(processList)):
+            if processList[0].startTime <= currentTime:
+                readyQueue.append(processList[0])
+                #count = count - 1
+                processList.remove(processList[0])
+            else:
+                break
 
-def FCFS():
-    print("FCFS")
-    '''processList = processList.sort(key=lambda x: x.startTime, reverse=False)
-    temp = 0
-    x = []
-    y = []
+        if len(readyQueue) > 0:
+            readyQueue.sort(key=lambda x: x.priority, reverse=True)
+            for k in range(len(readyQueue) - 1):
+                if readyQueue[k].priority == readyQueue[k+1].priority:
+                    if readyQueue[k+1].number < readyQueue[k].number:
+                        temp = readyQueue[k]
+                        readyQueue[k] = readyQueue[k+1]
+                        readyQueue[k+1] = temp
 
-    for i in range(len(processList)):
-        y.append(processList[i].number)
-        if processList[i].startTime <= temp:
-            temp2 = temp
+            x.append(currentTime)
+            y.append(readyQueue[0].number)
+            currentTime = currentTime + readyQueue[0].burstTime
+            x.append(currentTime)
+            y.append(readyQueue[0].number)
+            readyQueue.remove(readyQueue[0])
+
         else:
-            temp2 = temp + (processList[i].startTime - temp)
-        temp2 = processList[i].startTime - temp
-        x.append(temp2)
-        x.append(temp2)
-        temp3 = temp2 + processList[i].burstTime
-        x.append(temp3)
-        y.append(0)
-        y.append(processList[i].number)
-        y.append(processList[i].number)
-        temp = temp3
+            y.append(0)
+            x.append(currentTime)
+            currentTime = processList[0].startTime
+            y.append(0)
+            x.append(currentTime)
 
-    plt.plot(x, y, color='green', linestyle='solid', linewidth=3,
-             marker='o', markerfacecolor='blue', markersize=12)
+    plt.xticks(np.arange(math.ceil(currentTime+1)))
+    plt.grid(b=None, which='major', axis='both')
+    plt.plot(x, y, color='green', linestyle='solid', linewidth=1)
     plt.show()
-'''
+
+
+def FCFS(processList):
+    print("FCFS")
+    Ticks = []
+    Ticks.append("idle")
+    for i,process in enumerate(processList):
+        Ticks.append(str(i+1))
+    plt.yticks(np.arange(len(processList)+1),Ticks)
+    processList.sort(key=lambda x: x.startTime, reverse=False)
+    currentTime = 0
+    x = []
+    y = []
+    x.append(0)
+    y.append(0)
+
+    for i in range(len(processList)):
+        if processList[i].startTime <= currentTime:
+            x.append(currentTime)
+            y.append(processList[i].number)
+            currentTime = currentTime+processList[i].burstTime
+            x.append(currentTime)
+            y.append(processList[i].number)
+
+        else:
+            y.append(0)
+            x.append(currentTime)
+            currentTime = processList[i].startTime
+            y.append(0)
+            x.append(currentTime)
+            x.append(currentTime)
+            y.append(processList[i].number)
+            currentTime = currentTime + processList[i].burstTime
+            x.append(currentTime)
+            y.append(processList[i].number)
+
+    plt.xticks(np.arange(math.ceil(currentTime+1)))
+    plt.grid(b=None, which='major', axis='both')
+    plt.plot(x, y, color='green', linestyle='solid', linewidth=1)
+    plt.show()
+
 incVal = 1
 def SRTN(processList,switchingTime):
     workingQueue = []

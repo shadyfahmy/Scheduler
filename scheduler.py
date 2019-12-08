@@ -31,7 +31,7 @@ def data1():
 
 def readData():
     global N, processList
-    messagebox.showinfo('Message', fileName)
+    #messagebox.showinfo('Message', fileName)
     f = open(fileName, "r")
     if f.mode == 'r':
         lines = f.readlines()
@@ -44,7 +44,7 @@ def readData():
     if scheduling == "HPF":
         HPF(processList)
     elif scheduling == "FCFS":
-        FCFS()
+        FCFS(processList)
     elif scheduling == "SRTN":
         SRTN(processList,float(contextSwitch))
     elif scheduling == "RR":

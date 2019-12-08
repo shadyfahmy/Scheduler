@@ -1,3 +1,5 @@
+import operator
+
 import matplotlib.pyplot as plt
 
 processList = []
@@ -17,17 +19,7 @@ N = lines[0]
 for i in range(1, int(N)+1):
     processList.append(process(int(lines[i].split()[0]), int(lines[i].split()[1]), int(lines[i].split()[2]), int(lines[i].split()[3])))
 
-print(N)
-print(processList[0].number)
-print(processList[0].startTime)
-print(processList[0].burstTime)
-print(processList[0].priority)
-print(len(processList))
+processList = sorted(processList, key=operator.attrgetter("priority", "number"), reverse=True)
 
-x = [1,2,3,4,5,6]
-# corresponding y axis values
-y = [2,4,1,5,2,6]
-
-plt.plot(x, y, color='green', linestyle='solid', linewidth=3,
-         marker='o', markerfacecolor='blue', markersize=12)
-plt.show()
+for i in range(len(processList)):
+    print(processList[i].number)
