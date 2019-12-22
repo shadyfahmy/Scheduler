@@ -13,6 +13,13 @@ class process(object):
         self.remainingTime = float(burstTime)
 
 def HPF(processList):
+    waiting_time = np.zeros(len(processList))
+    turnaround_time = np.zeros(len(processList))
+    weighted_turnaround_time = np.zeros(len(processList))
+    avg_turnaround_time = 0
+    avg_weighted_turnaround_time = 0
+
+    tempsave = np.copy(processList)
     print("HPF")
     Ticks = []
     Ticks.append("idle")
@@ -48,7 +55,10 @@ def HPF(processList):
 
             x.append(currentTime)
             y.append(readyQueue[0].number)
+            waiting_time[readyQueue[0].number - 1] = currentTime - readyQueue[0].startTime
             currentTime = currentTime + readyQueue[0].burstTime
+            turnaround_time[readyQueue[0].number - 1] = currentTime - readyQueue[0].startTime
+            weighted_turnaround_time[readyQueue[0].number - 1] = turnaround_time[readyQueue[0].number - 1]/readyQueue[0].burstTime
             x.append(currentTime)
             y.append(readyQueue[0].number)
             readyQueue.remove(readyQueue[0])
@@ -60,6 +70,18 @@ def HPF(processList):
             y.append(0)
             x.append(currentTime)
 
+    avg_turnaround_time = np.sum(turnaround_time)/len(turnaround_time)
+    avg_weighted_turnaround_time = np.sum(weighted_turnaround_time)/len(weighted_turnaround_time)
+
+    file1 = open("Output.txt", "a")
+    for i in range(len(tempsave)):
+        L = str(tempsave[i].number)+"  \t" + str(waiting_time[tempsave[i].number - 1])+ " \t " + str(turnaround_time[tempsave[i].number - 1]) + "\t  " +str(weighted_turnaround_time[tempsave[i].number - 1])+ "\n"
+        file1.write(L)
+
+    file1.write(str(avg_turnaround_time) + "\n")
+    file1.write(str(avg_weighted_turnaround_time) + "\n")
+    file1.close()
+
     plt.xticks(np.arange(math.ceil(currentTime+1)))
     plt.grid(b=None, which='major', axis='both')
     plt.plot(x, y, color='green', linestyle='solid', linewidth=1)
@@ -67,6 +89,13 @@ def HPF(processList):
 
 
 def FCFS(processList):
+    tempsave = np.copy(processList)
+    waiting_time = np.zeros(len(processList))
+    turnaround_time = np.zeros(len(processList))
+    weighted_turnaround_time = np.zeros(len(processList))
+    avg_turnaround_time = 0
+    avg_weighted_turnaround_time = 0
+
     print("FCFS")
     Ticks = []
     Ticks.append("idle")
@@ -84,9 +113,13 @@ def FCFS(processList):
         if processList[i].startTime <= currentTime:
             x.append(currentTime)
             y.append(processList[i].number)
+            waiting_time[processList[i].number - 1] = currentTime - processList[i].startTime
             currentTime = currentTime+processList[i].burstTime
             x.append(currentTime)
             y.append(processList[i].number)
+
+            turnaround_time[processList[i].number - 1] = currentTime - processList[i].startTime
+            weighted_turnaround_time[processList[i].number - 1] = turnaround_time[processList[i].number - 1]/processList[i].burstTime
 
         else:
             y.append(0)
@@ -96,9 +129,25 @@ def FCFS(processList):
             x.append(currentTime)
             x.append(currentTime)
             y.append(processList[i].number)
+            waiting_time[processList[i].number - 1] = currentTime - processList[i].startTime
             currentTime = currentTime + processList[i].burstTime
             x.append(currentTime)
             y.append(processList[i].number)
+
+            turnaround_time[processList[i].number - 1] = currentTime - processList[i].startTime
+            weighted_turnaround_time[processList[i].number - 1] = turnaround_time[processList[i].number - 1]/processList[i].burstTime
+
+    avg_turnaround_time = np.sum(turnaround_time)/len(processList)
+    avg_weighted_turnaround_time = np.sum(weighted_turnaround_time)/len(processList)
+
+    file1 = open("Output.txt", "a")
+    for i in range(len(tempsave)):
+        L = str(tempsave[i].number)+"  \t" + str(waiting_time[tempsave[i].number - 1])+ " \t " + str(turnaround_time[tempsave[i].number - 1]) + "\t  " +str(weighted_turnaround_time[tempsave[i].number - 1])+ "\n"
+        file1.write(L)
+
+    file1.write(str(avg_turnaround_time) + "\n")
+    file1.write(str(avg_weighted_turnaround_time) + "\n")
+    file1.close()
 
     plt.xticks(np.arange(math.ceil(currentTime+1)))
     plt.grid(b=None, which='major', axis='both')
