@@ -5,12 +5,13 @@ import numpy as np
 import math
 
 class process(object):
-    def __init__(self, number, startTime, burstTime, priority):
+    def __init__(self, number, startTime, burstTime, priority,started = False):
         self.number = number
         self.startTime = float(startTime)
         self.burstTime = float(burstTime)
         self.priority = float(priority)
         self.remainingTime = float(burstTime)
+        self.started = bool(started)
 
 def HPF(processList):
     waiting_time = np.zeros(len(processList))
@@ -156,6 +157,14 @@ def FCFS(processList):
 
 incVal = 1
 def SRTN(processList,switchingTime):
+    waiting_time = np.zeros(len(processList))
+    actual_starting_time = np.zeros(len(processList))
+    turnaround_time = np.zeros(len(processList))
+    weighted_turnaround_time = np.zeros(len(processList))
+    avg_turnaround_time = 0
+    avg_weighted_turnaround_time = 0
+    workingQueue = []
+    tempsave = np.copy(processList)
     workingQueue = []
     processList.sort(key=lambda x: x.startTime)
     y = []
@@ -174,6 +183,7 @@ def SRTN(processList,switchingTime):
     currentTime = 0
     switch = False
     while len(processList)>0 or len(workingQueue)>0 or currentProcess!= -1:
+        
         while(len(processList)>0):
             if (currentTime >= processList[0].startTime):
                 if(currentProcess == -1):
@@ -191,6 +201,11 @@ def SRTN(processList,switchingTime):
                 processList.remove(processList[0])
             else:
                 break
+        if(currentProcess!=-1):
+            if currentProcess.started == False:
+                waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
+                actual_starting_time[currentProcess.number-1]= currentTime
+                currentProcess.started = True
         if(switch):
             if switchingTime > 0:
                 y.append(1)
@@ -211,6 +226,8 @@ def SRTN(processList,switchingTime):
                 remTime = currentProcess.remainingTime
                 currentTime+= remTime
                 currentProcess.remainingTime-= remTime
+                turnaround_time[currentProcess.number-1] = currentTime -currentProcess.startTime
+                weighted_turnaround_time[currentProcess.number-1] = turnaround_time[currentProcess.number-1]/currentProcess.burstTime
                 y.append(currentProcess.number+1)
                 x.append(currentTime)
                 currentProcess = -1
@@ -223,13 +240,30 @@ def SRTN(processList,switchingTime):
             currentTime+=incVal
             y.append(0)
             x.append(currentTime)
+    avg_turnaround_time = np.sum(turnaround_time)/len(turnaround_time)
+    avg_weighted_turnaround_time = np.sum(weighted_turnaround_time)/len(weighted_turnaround_time)
+
+    file1 = open("Output.txt", "a")
+    for i in range(len(tempsave)):
+        L = str(tempsave[i].number)+"  \t" + str(waiting_time[tempsave[i].number - 1])+ " \t " + str(turnaround_time[tempsave[i].number - 1]) + "\t  " +str(weighted_turnaround_time[tempsave[i].number - 1])+ "\n"
+        file1.write(L)
+    file1.write(str(avg_turnaround_time) + "\n")
+    file1.write(str(avg_weighted_turnaround_time) + "\n")
+    file1.close()
     plt.xticks(np.arange(math.ceil(currentTime+1)))
     plt.grid(b=None, which='major', axis='both')
     plt.plot(x, y, color='green', linestyle='solid', linewidth=1)
     plt.show()
 
 def RR(processList,quantumTime,switchingTime):
+    waiting_time = np.zeros(len(processList))
+    actual_starting_time = np.zeros(len(processList))
+    turnaround_time = np.zeros(len(processList))
+    weighted_turnaround_time = np.zeros(len(processList))
+    avg_turnaround_time = 0
+    avg_weighted_turnaround_time = 0
     workingQueue = []
+    tempsave = np.copy(processList)
     processList.sort(key=lambda x: x.startTime)
     y = []
     x = []
@@ -265,6 +299,11 @@ def RR(processList,quantumTime,switchingTime):
             else:
                 workingQueue.append(lastProcess)
             lastProcess = -1
+        if(currentProcess!=-1):
+                if currentProcess.started == False:
+                    waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
+                    actual_starting_time[currentProcess.number-1]= currentTime
+                    currentProcess.started = True
         if(switch):
             if switchingTime > 0:
                 y.append(1)
@@ -292,15 +331,27 @@ def RR(processList,quantumTime,switchingTime):
                 currentProcess.remainingTime-= remTime
                 y.append(currentProcess.number+1)
                 x.append(currentTime)
+                turnaround_time[currentProcess.number-1] = currentTime -currentProcess.startTime
+                weighted_turnaround_time[currentProcess.number-1] = turnaround_time[currentProcess.number-1]/currentProcess.burstTime
                 currentProcess = -1
                 if(len(workingQueue) != 0):
                     currentProcess = workingQueue.pop(0)
-                # if switchingTime > 0:
-                #     switch = True
         else:
             currentTime+=0.01
             y.append(0)
             x.append(currentTime)
+   
+   
+    avg_turnaround_time = np.sum(turnaround_time)/len(turnaround_time)
+    avg_weighted_turnaround_time = np.sum(weighted_turnaround_time)/len(weighted_turnaround_time)
+
+    file1 = open("Output.txt", "a")
+    for i in range(len(tempsave)):
+        L = str(tempsave[i].number)+"  \t" + str(waiting_time[tempsave[i].number - 1])+ " \t " + str(turnaround_time[tempsave[i].number - 1]) + "\t  " +str(weighted_turnaround_time[tempsave[i].number - 1])+ "\n"
+        file1.write(L)
+    file1.write(str(avg_turnaround_time) + "\n")
+    file1.write(str(avg_weighted_turnaround_time) + "\n")
+    file1.close()
     plt.xticks(np.arange(math.ceil(currentTime+1)))
     plt.grid(b=None, which='major', axis='both')
     plt.plot(x, y, color='green', linestyle='solid', linewidth=1)
