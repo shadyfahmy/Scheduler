@@ -203,7 +203,7 @@ def SRTN(processList,switchingTime):
                 break
         if(currentProcess!=-1):
             if currentProcess.started == False:
-                waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
+                # waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
                 actual_starting_time[currentProcess.number-1]= currentTime
                 currentProcess.started = True
         if(switch):
@@ -227,6 +227,7 @@ def SRTN(processList,switchingTime):
                 currentTime+= remTime
                 currentProcess.remainingTime-= remTime
                 turnaround_time[currentProcess.number-1] = currentTime -currentProcess.startTime
+                waiting_time[currentProcess.number-1]=turnaround_time[currentProcess.number-1]-currentProcess.burstTime
                 weighted_turnaround_time[currentProcess.number-1] = turnaround_time[currentProcess.number-1]/currentProcess.burstTime
                 y.append(currentProcess.number+1)
                 x.append(currentTime)
@@ -301,7 +302,7 @@ def RR(processList,quantumTime,switchingTime):
             lastProcess = -1
         if(currentProcess!=-1):
                 if currentProcess.started == False:
-                    waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
+                    # waiting_time[currentProcess.number-1]=currentTime-currentProcess.startTime
                     actual_starting_time[currentProcess.number-1]= currentTime
                     currentProcess.started = True
         if(switch):
@@ -332,6 +333,7 @@ def RR(processList,quantumTime,switchingTime):
                 y.append(currentProcess.number+1)
                 x.append(currentTime)
                 turnaround_time[currentProcess.number-1] = currentTime -currentProcess.startTime
+                waiting_time[currentProcess.number-1]=turnaround_time[currentProcess.number-1]-currentProcess.burstTime
                 weighted_turnaround_time[currentProcess.number-1] = turnaround_time[currentProcess.number-1]/currentProcess.burstTime
                 currentProcess = -1
                 if(len(workingQueue) != 0):
